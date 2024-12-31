@@ -1,7 +1,9 @@
 import { NodeProps } from "@xyflow/react";
-import { useMemo } from "react";
-import { taskRegistry } from "@/lib/workflow/task/registry";
+import { memo } from "react";
+import NodeCard from "./NodeCard";
 
-export default function NodeComponent(props: NodeProps) {
-    
-}
+export const NodeComponent = memo((props: NodeProps) => {
+  return <NodeCard nodeId={props.id} isSelected={!!props.selected}>AppNode</NodeCard>;
+});
+
+NodeComponent.displayName = "NodeComponent";
