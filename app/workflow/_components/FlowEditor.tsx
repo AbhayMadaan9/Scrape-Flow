@@ -21,8 +21,15 @@ export default function FlowEditor({workflow}:{workflow:WorkFlow}) {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       nodeTypes={nodeTypes}
+      snapGrid={[40, 40]}
+      snapToGrid
+      fitView
+      fitViewOptions={{
+        padding: 1
+      }}
+
       >
-        <Controls position='top-left'/>
+        <Controls position='top-left' fitViewOptions={{padding: 1}}/>
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         
         </ReactFlow>
