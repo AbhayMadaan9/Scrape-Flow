@@ -8,13 +8,13 @@ export const LaunchBrowserTask = {
     <GlobeIcon className="stroke-pink-400" {...props} />
   ),
   isEntryPoint: true,
-  inputs: {
-    url: {
+  inputs: [
+     {
       name: "url",
       helperText: "URL",
       type: TaskParamType.STRING,
       required: true,
       hideHandle: true,
     },
-  },
+  ],
 };

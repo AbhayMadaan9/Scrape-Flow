@@ -2,7 +2,7 @@ import { TaskType } from "@/types/tasks";
 import { taskRegistry } from "./task/registry";
 import { AppNode } from "@/types/appNode";
 
-export function CreateFlowNode(nodeType: TaskType, position?: { x: number; y: number }): AppNode {
+export function CreateWorkFlowNode(nodeType: TaskType, position?: { x: number; y: number }): AppNode {
     return {
         id: crypto.randomUUID(),
         type: "Node",
