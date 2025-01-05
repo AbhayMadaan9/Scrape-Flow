@@ -1,12 +1,11 @@
 export enum TaskType {
-    LUNCH_BROWSER = "Node",
+    LUNCH_BROWSER = "LAUNCH_BROWSER",
+    PAGE_TO_HTML = "PAGE_TO_HTML",
+
 }
 export enum TaskParamType {
     STRING = "STRING",
-    NUMBER = "NUMBER",
-    BOOLEAN = "BOOLEAN",
-    ARRAY = "ARRAY",
-    OBJECT = "OBJECT",
+    BROWSER_INSTANCE = "BROWSER_INSTANCE"
 }
 
 
