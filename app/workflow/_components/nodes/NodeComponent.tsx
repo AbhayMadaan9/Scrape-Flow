@@ -12,7 +12,6 @@ import { NodeOutputs } from "./NodeOutputs";
 export const NodeComponent = memo((props: NodeProps) => {
   const nodeData = props.data as AppNodeData;
   const task = taskRegistry[nodeData.type];
-  console.log('task: ', task);
   return (
     <NodeCard nodeId={props.id} isSelected={!!props.selected}>
       <NodeHeader taskType={nodeData.type} />
