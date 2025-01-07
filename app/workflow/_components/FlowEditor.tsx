@@ -7,6 +7,7 @@ import {
   Connection,
   Controls,
   Edge,
+  getOutgoers,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -19,6 +20,7 @@ import { CreateWorkFlowNode } from "@/lib/workflow/CreateWorkflowNode";
 import { TaskType } from "@/types/tasks";
 import { AppNode } from "@/types/appNode";
 import DeleteableEdge from "./edges/DeleteableEdge";
+import { taskRegistry } from "@/lib/workflow/task/registry";
 
 const nodeTypes = {
   LAUNCH_BROWSER: NodeComponent,
@@ -47,29 +49,86 @@ export default function FlowEditor({ workflow }: { workflow: WorkFlow }) {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
-  const onDrop = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    const taskType = event.dataTransfer.getData("application/reactflow");
-    if (typeof taskType === undefined || !taskType) return;
-    const position = screenToFlowPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
-    const newNode = CreateWorkFlowNode(taskType as TaskType, position);
-    setNodes((nds) => nds.concat(newNode));
-  }, [screenToFlowPosition, setNodes]);
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+      const taskType = event.dataTransfer.getData("application/reactflow");
+      if (typeof taskType === undefined || !taskType) return;
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      const newNode = CreateWorkFlowNode(taskType as TaskType, position);
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [screenToFlowPosition, setNodes]
+  );
 
-  const onConnect = useCallback((connection: Connection) => {
-    setEdges((edgs) => addEdge({ ...connection, animated: true }, edgs));
-    if (!connection.target || !connection.targetHandle) {
-      return;
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      setEdges((edgs) => addEdge({ ...connection, animated: true }, edgs));
+      if (!connection.target || !connection.targetHandle) {
+        return;
+      }
+      const node = nodes.find((nd) => nd.id === connection.target);
+      if (!node) return;
+      const nodeInputs = node.data.inputs;
+      console.log("nodeInputs: ", nodeInputs);
+      // delete nodeInputs[connection.targetHandle];
+      console.log("connection.targetHandle: ", connection.targetHandle);
+      updateNodeData(node.id, {
+        inputs: {
+          ...nodeInputs,
+          [connection.targetHandle]: "",
+        },
+      });
+    },
+    [nodes, setEdges, updateNodeData]
+  );
+
+  const isValidConnection = useCallback((connection: Edge | Connection) => {
+    //No self connection
+    if (connection.source === connection.target) {
+      return false;
     }
-    const node = nodes.find((nd) => nd.id === connection.target);
-    if (!node) return;
-    const nodeInputs = node.data.inputs;
-    delete nodeInputs[connection.targetHandle];
-    updateNodeData(node.id, { inputs: nodeInputs });
-  }, [nodes, setEdges, updateNodeData]);
+    //same task type connection
+    const source = nodes.find((node) => node.id === connection.source);
+    console.log("source: ", source);
+    const target = nodes.find((node) => node.id === connection.target);
+    console.log("target: ", target);
+    if (!target || !source) {
+      console.error("Invalid connection: ", connection);
+      return false;
+    }
+    const sourceTask = taskRegistry[source.data.type];
+    const targetTask = taskRegistry[target.data.type];
+
+    const input = sourceTask.inputs.find(
+      (i) => i.name === connection.sourceHandle
+    );
+    const output = targetTask.outputs.find(
+      (o) => o.name === connection.targetHandle
+    );
+    if (input?.type !== output?.type) {
+      console.log("Invalid connection type");
+    }
+
+    const hasCycle = (node: AppNode, visited = new Set()) => {
+      if (visited.has(node.id)) return false;
+
+      visited.add(node.id);
+
+      for (const outgoer of getOutgoers(node, nodes, edges)) {
+        if (outgoer.id === connection.source) return true;
+        if (hasCycle(outgoer, visited)) return true;
+      }
+    };
+
+    if (target.id === connection.source) return false;
+    return !hasCycle(target);
+
+  }, [nodes]);
+
   return (
     <main className="h-full w-full">
       <ReactFlow
@@ -88,6 +147,7 @@ export default function FlowEditor({ workflow }: { workflow: WorkFlow }) {
         onDragOver={onDragOver}
         onDrop={onDrop}
         onConnect={onConnect}
+        isValidConnection={isValidConnection} //for valid mapping according to type
       >
         <Controls position="top-left" fitViewOptions={{ padding: 1 }} />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />

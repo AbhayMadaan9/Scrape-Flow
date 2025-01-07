@@ -9,9 +9,11 @@ import BrowserInstanceParam from "./param/BrowserInstanceParam";
 export default function NodeParamField({
   param,
   nodeId,
+  disabled
 }: {
   param: TaskParam;
   nodeId: string;
+  disabled: boolean;
 }) {
   const { updateNodeData, getNode } = useReactFlow();
   const node = getNode(nodeId) as AppNode;
@@ -23,11 +25,11 @@ export default function NodeParamField({
         ...node.data,
         inputs: {
           ...node.data.inputs,
-          [param.type]: newValue,
+          [param.name]: newValue,
         },
       });
     },
-    [updateNodeData, nodeId, node.data, param.type]
+    [updateNodeData, nodeId, node.data, param.name]
   );
   switch (param.type) {
     case TaskParamType.STRING:
@@ -36,6 +38,7 @@ export default function NodeParamField({
           param={param}
           value={value}
           updateNodeParamValue={updateNodeParamValue}
+          disabled={disabled}
         />
       );
 
@@ -45,6 +48,7 @@ export default function NodeParamField({
             param={param}
             value={value}
             updateNodeParamValue={updateNodeParamValue}
+            
           />
         );
     default:

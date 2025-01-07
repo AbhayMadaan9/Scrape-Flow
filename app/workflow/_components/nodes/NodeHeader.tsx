@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { taskRegistry } from "@/lib/workflow/task/registry";
 import { TaskType } from "@/types/tasks";
-import { CoinsIcon, GripVerticalIcon } from "lucide-react";
+import { CoinsIcon, CopyIcon, GripVerticalIcon, TrashIcon } from "lucide-react";
 import React from "react";
 
 export default function NodeHeader({ taskType }: { taskType: TaskType }) {
@@ -23,6 +23,16 @@ export default function NodeHeader({ taskType }: { taskType: TaskType }) {
             <CoinsIcon size={16} />
             Todo
           </Badge>
+          {!task.isEntryPoint && ( //entry point should not be deleted and duplicated
+            <>
+            <Button variant={'ghost'} size={'icon'}>
+              <TrashIcon size={12}/>
+            </Button>
+            <Button variant={'ghost'} size={'icon'}>
+              <CopyIcon size={12}/>
+            </Button>
+            </>
+          )}
           <Button
             variant="ghost"
             size="icon"
