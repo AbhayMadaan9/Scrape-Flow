@@ -27,14 +27,14 @@ import DeleteWorkflowDialog from "./DeleteWorkflowDialog";
 
 
 const statusColor: Record<WorkflowStatus, string> = {
-  [WorkflowStatus.draft]: "bg-yellow-400 text-yellow-600",
-  [WorkflowStatus.published]: "bg-primary",
-  [WorkflowStatus.archived]: "bg-gray-500 text-gray-800",
+  [WorkflowStatus.DRAFT]: "bg-yellow-400 text-yellow-600",
+  [WorkflowStatus.PUBLISHED]: "bg-primary",
+  [WorkflowStatus.ARCHIVED]: "bg-gray-500 text-gray-800",
 };
 
 
 export default function WorkflowCard({ workflow }: { workflow: WorkFlow }) {
-  const isDraft = workflow.status === WorkflowStatus.draft;
+  const isDraft = workflow.status === WorkflowStatus.DRAFT;
   return (
     <div>
       <Card className="border border-separate shadow-sm rounded-lg overflow-hidden">

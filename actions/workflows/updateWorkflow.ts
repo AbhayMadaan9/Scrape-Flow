@@ -22,7 +22,7 @@ export async function updateWorkFlow({
   if (!workflow) {
     throw new Error("Workflow not found");
   }
-  if (workflow.status !== WorkflowStatus.draft) {
+  if (workflow.status !== WorkflowStatus.DRAFT) {
     throw new Error("Cannot update a DRAFT workflow");
   }
   await prisma.workFlow.update({

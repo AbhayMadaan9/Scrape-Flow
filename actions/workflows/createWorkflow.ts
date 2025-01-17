@@ -39,7 +39,7 @@ export const createWorkflow = async (data: CreateWorkflowSchemaType) => {
       name: workflow.name,
       description: workflow.description ?? "",
       userId,
-      status: WorkflowStatus.draft,
+      status: WorkflowStatus.DRAFT,
       definition: JSON.stringify(initialWorkflow),
     },
   });
