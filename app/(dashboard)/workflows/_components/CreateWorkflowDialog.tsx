@@ -25,8 +25,8 @@ import {
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
-import { createWorkflow } from "@/actions/workflows/createWorkflow";
 import { toast } from "sonner";
+import { createWorkflow } from "@/actions/workflows/CreateWorkflow";
 
 export default function CreateWorkflowDialog({
   triggerText,
@@ -55,12 +55,12 @@ export default function CreateWorkflowDialog({
   });
 
   const onSubmit = useCallback(
-    (data: z.infer<typeof createWorkflowSchema>) => {
-      toast.loading("Creating workflow...", { id: "creating-workflow" });
-      mutate(data);
+    async (data: z.infer<typeof createWorkflowSchema>) => {
+        mutate(data); 
     },
     [mutate]
   );
+  
   return (
     <Dialog open={open} onOpenChange={(open) => {
         setOpen(open);

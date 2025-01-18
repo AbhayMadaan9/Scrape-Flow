@@ -35,11 +35,12 @@ export default function StringParam({
       </Label>
       <Componenent
         id={id}
-        className="text-sm"
+        className="text-sm bg-white"
         value={internalValue}
         placeholder="Enter value here..."
         onChange={handleChange}
         disabled={disabled}
+
       />
       {param.helperText && (
         <p className="text-muted-foreground text-xs px-2">{param.helperText}</p>

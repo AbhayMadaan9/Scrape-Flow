@@ -1,26 +1,51 @@
 import { taskRegistry } from "@/lib/workflow/task/registry";
-import { AppNode } from "@/types/appNode";
+import { AppNode, AppNodeMissingInputs } from "@/types/appNode";
 import {
   WorkflowExecutionPlan,
   WorkflowExecutionPlanPhase,
 } from "@/types/workflow";
 import { Edge, getIncomers } from "@xyflow/react";
 
+
+export enum FlowToExecutionPlanValidationError {
+  "NO_ENTRY_POINT",
+  "INVALID_INPUTS"
+}
 type FlowToExecutionPlanType = {
   executionPlan?: WorkflowExecutionPlan;
+  error?: {
+    type: FlowToExecutionPlanValidationError;
+    invalidElements?: AppNodeMissingInputs[];
+  }
 };
 export default function FlowToExecutionPlan(
   nodes: AppNode[],
   edges: Edge[]
 ): FlowToExecutionPlanType {
   const entryPoint = nodes.find(
-    (node) => taskRegistry[node.data.type].isEntryPoint
+    (node) => taskRegistry[node.data.type]?.isEntryPoint
   );
   if (!entryPoint) {
-    throw new Error("Handle execution plan error");
+   return {
+    error: {
+      type: FlowToExecutionPlanValidationError.NO_ENTRY_POINT,
+    },
+   }
   }
+
+  const inputsWithErrors: AppNodeMissingInputs[] = [];
   const planned = new Set<string>();
-  const executionPlan: WorkflowExecutionPlan = [
+
+  const invalidInputs = getInvalidInputs(entryPoint, edges, planned);
+  console.log('invalidInputs: ', invalidInputs);
+
+  if(inputsWithErrors.length > 0) {
+    inputsWithErrors.push({
+      nodeId: entryPoint.id,
+      inputs: invalidInputs
+    })
+   }
+    const executionPlan: WorkflowExecutionPlan = [
     {
       phase: 1,
       nodes: [entryPoint],
@@ -37,16 +62,19 @@ export default function FlowToExecutionPlan(
       nodes: [],
     };
     for (const currentNode of nodes) {
-      console.log('currentNode: ', currentNode);
       if (planned.has(currentNode.id)) {
         continue;
       }
       const invalidInputs = getInvalidInputs(currentNode, edges, planned);
       if (invalidInputs.length > 0) {
         const incomers = getIncomers(currentNode, nodes, edges);
+        console.log('incomers: ', incomers);
         if (incomers.every((incomer) => planned.has(incomer.id))) {
           //since every incoming edge from the node are already visited/executed it means current node has invalid inputs and whole workflow is invalid
-          throw new Error("TODO: Handle execution plan error");
+          inputsWithErrors.push({
+            nodeId: currentNode.id,
+            inputs: invalidInputs,
+          })
         } else {
           //skip for now
           continue;
@@ -58,6 +86,15 @@ export default function FlowToExecutionPlan(
       planned.add(node.id);
     }
     executionPlan.push(nextPhase);
+  }
+  console.log('inputsWithErrors: ', inputsWithErrors);
+  if(inputsWithErrors.length > 0){
+    return {
+      error: {
+        type: FlowToExecutionPlanValidationError.INVALID_INPUTS,
+        invalidElements: inputsWithErrors,
+      },
+    }
   }
   return { executionPlan };
 }
