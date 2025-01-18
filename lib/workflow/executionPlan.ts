@@ -37,7 +37,6 @@ export default function FlowToExecutionPlan(
   const planned = new Set<string>();
 
   const invalidInputs = getInvalidInputs(entryPoint, edges, planned);
-  console.log('invalidInputs: ', invalidInputs);
 
   if(inputsWithErrors.length > 0) {
     inputsWithErrors.push({
@@ -68,7 +67,6 @@ export default function FlowToExecutionPlan(
       const invalidInputs = getInvalidInputs(currentNode, edges, planned);
       if (invalidInputs.length > 0) {
         const incomers = getIncomers(currentNode, nodes, edges);
-        console.log('incomers: ', incomers);
         if (incomers.every((incomer) => planned.has(incomer.id))) {
           //since every incoming edge from the node are already visited/executed it means current node has invalid inputs and whole workflow is invalid
           inputsWithErrors.push({
@@ -87,7 +85,6 @@ export default function FlowToExecutionPlan(
     }
     executionPlan.push(nextPhase);
   }
-  console.log('inputsWithErrors: ', inputsWithErrors);
   if(inputsWithErrors.length > 0){
     return {
       error: {

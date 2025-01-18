@@ -39,7 +39,7 @@ export async function runWorkFlow({
     throw new Error("Invalid execution plan");
   }
   executionPlan = result.executionPlan;
-
+  console.log('executionPlan: ', executionPlan.map(executionPlan => executionPlan.nodes.map(node => node.data)));
   const execution = await prisma.workFlowExecution.create({
     data: {
       userId,
@@ -50,7 +50,7 @@ export async function runWorkFlow({
       phases: {
         create: executionPlan.flatMap(phase => {
           return phase.nodes.flatMap(node => {
-            return { userId, phase: phase.phase, status: ExecutionPhaseStatus.CREATED, number: phase.phase, node: JSON.stringify(node), name: taskRegistry[node.data.type].label }
+            return { userId, status: ExecutionPhaseStatus.CREATED, number: phase.phase, node: JSON.stringify(node), name: taskRegistry[node.data.type].label }
           })
         })
       }

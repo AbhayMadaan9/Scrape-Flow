@@ -33,7 +33,6 @@ export default function useExecutionPlan() {
     const { nodes, edges } = toObject();
     const { executionPlan, error } = FlowToExecutionPlan(nodes as AppNode[], edges);
     if (error) {
-      console.log('error: ', error);
       handleError(error);
       return null;
     }

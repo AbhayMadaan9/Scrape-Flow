@@ -55,7 +55,6 @@ export default function NodeHeader({
                     x: newX,
                     y: newY,
                   });
-                  console.log('newNode: ', newNode);
                   addNodes([newNode]);
                 }}
               >

@@ -73,9 +73,7 @@ export default function FlowEditor({ workflow }: { workflow: WorkFlow }) {
       const node = nodes.find((nd) => nd.id === connection.target);
       if (!node) return;
       const nodeInputs = node.data.inputs;
-      console.log("nodeInputs: ", nodeInputs);
       // delete nodeInputs[connection.targetHandle];
-      console.log("connection.targetHandle: ", connection.targetHandle);
       updateNodeData(node.id, {
         inputs: {
           ...nodeInputs,
@@ -93,9 +91,7 @@ export default function FlowEditor({ workflow }: { workflow: WorkFlow }) {
     }
     //same task type connection
     const source = nodes.find((node) => node.id === connection.source);
-    console.log("source: ", source);
     const target = nodes.find((node) => node.id === connection.target);
-    console.log("target: ", target);
     if (!target || !source) {
       console.error("Invalid connection: ", connection);
       return false;
