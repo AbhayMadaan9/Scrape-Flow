@@ -55,7 +55,7 @@ model ExecutionPhase {
   inputs      String?
   outputs     String?
 
-  creditsCost Int?
+  creditsCosumed Int?
 
   workFlowExecutionId String
   execution           WorkFlowExecution @relation(fields: [workFlowExecutionId], references: [id], onDelete: Cascade)

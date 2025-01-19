@@ -4,7 +4,7 @@ import {
   WorkflowExecutionPlan,
   WorkflowExecutionPlanPhase,
 } from "@/types/workflow";
-import { Edge, getIncomers } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 
 
 export enum FlowToExecutionPlanValidationError {
@@ -26,11 +26,11 @@ export default function FlowToExecutionPlan(
     (node) => taskRegistry[node.data.type]?.isEntryPoint
   );
   if (!entryPoint) {
-   return {
-    error: {
-      type: FlowToExecutionPlanValidationError.NO_ENTRY_POINT,
-    },
-   }
+    return {
+      error: {
+        type: FlowToExecutionPlanValidationError.NO_ENTRY_POINT,
+      },
+    }
   }
 
   const inputsWithErrors: AppNodeMissingInputs[] = [];
@@ -38,13 +38,13 @@ export default function FlowToExecutionPlan(
 
   const invalidInputs = getInvalidInputs(entryPoint, edges, planned);
 
-  if(inputsWithErrors.length > 0) {
+  if (inputsWithErrors.length > 0) {
     inputsWithErrors.push({
       nodeId: entryPoint.id,
       inputs: invalidInputs
     })
-   }
-    const executionPlan: WorkflowExecutionPlan = [
+  }
+  const executionPlan: WorkflowExecutionPlan = [
     {
       phase: 1,
       nodes: [entryPoint],
@@ -85,7 +85,7 @@ export default function FlowToExecutionPlan(
     }
     executionPlan.push(nextPhase);
   }
-  if(inputsWithErrors.length > 0){
+  if (inputsWithErrors.length > 0) {
     return {
       error: {
         type: FlowToExecutionPlanValidationError.INVALID_INPUTS,
@@ -132,3 +132,20 @@ function getInvalidInputs(node: AppNode, edges: Edge[], planned: Set<string>) {
   }
   return invalidInputs;
 }
+export const getIncomers = (
+  node: AppNode,
+  nodes: AppNode[],
+  edges: Edge[]
+) => {
+  if (!node.id) {
+    return [];
+  }
+  const incomersIds = new Set();
+  edges.forEach((edge) => {
+    if (edge.target === node.id) {
+      incomersIds.add(edge.source);
+    }
+  });
+
+  return nodes.filter((n) => incomersIds.has(n.id));
+};

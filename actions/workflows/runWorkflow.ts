@@ -6,6 +6,8 @@ import { taskRegistry } from "@/lib/workflow/task/registry";
 import { ExecutionPhaseStatus, ExecutionStatus, ExecutionType, WorkflowExecutionPlan, WorkflowStatus } from "@/types/workflow";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
 
 export async function runWorkFlow({
   id,
@@ -39,7 +41,6 @@ export async function runWorkFlow({
     throw new Error("Invalid execution plan");
   }
   executionPlan = result.executionPlan;
-  console.log('executionPlan: ', executionPlan.map(executionPlan => executionPlan.nodes.map(node => node.data)));
   const execution = await prisma.workFlowExecution.create({
     data: {
       userId,
@@ -63,6 +64,5 @@ export async function runWorkFlow({
   if(!execution) {
     throw new Error("Failed to create execution")
   }
+  redirect(`/workflow/runs/${id}/${execution.id}`)
 }
-
-revalidatePath("/workflows")

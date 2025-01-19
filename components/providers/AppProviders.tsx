@@ -18,7 +18,7 @@ export function AppProvider({
   enableSystem
   disableTransitionOnChange
   {...props}>{children}</NextThemesProvider>
-  <ReactQueryDevtools />
+  {/* <ReactQueryDevtools /> */}
   <Toaster/>
   </QueryClientProvider>
 }
